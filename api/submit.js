@@ -28,7 +28,7 @@ export default async function handler(req, res) {
 
   const dob = `${dob_year}-${dob_month.padStart(2, '0')}-${dob_day.padStart(2, '0')}`;
   const ip = req.headers['x-forwarded-for'] || req.connection?.remoteAddress || '';
-  const optindate = new Date().toISOString();
+  const optindate = new Date().toISOString().split('.')[0] + 'Z';
   const campagne_url = req.headers.referer || '';
 
   const payload = new URLSearchParams({
