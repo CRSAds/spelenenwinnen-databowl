@@ -4,7 +4,6 @@ export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
-  // Handle preflight
   if (req.method === 'OPTIONS') {
     res.status(200).end();
     return;
@@ -14,21 +13,20 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const bodyData = await req.body;
-  console.log('Ontvangen body:', bodyData);
+  const body = req.body;
 
-  const gender = bodyData.gender || '';
-  const firstname = bodyData.firstname || '';
-  const lastname = bodyData.lastname || '';
-  const email = bodyData.email || '';
-  const dob_day = bodyData.dob_day || '01';
-  const dob_month = bodyData.dob_month || '01';
-  const dob_year = bodyData.dob_year || '2000';
-  const transaction_id = bodyData.transaction_id || '';
+  const gender = body.gender || '';
+  const firstname = body.firstname || '';
+  const lastname = body.lastname || '';
+  const email = body.email || '';
+  const dob_day = body.dob_day || '01';
+  const dob_month = body.dob_month || '01';
+  const dob_year = body.dob_year || '2000';
+  const transaction_id = body.transaction_id || '';
 
   const dob = `${dob_year}-${dob_month.padStart(2, '0')}-${dob_day.padStart(2, '0')}`;
   const ip = req.headers['x-forwarded-for'] || req.connection?.remoteAddress || '';
-  const optindate = new Date().toISOString().split('.')[0] + 'Z';
+  const optindate = new Date().toISOString().replace('Z', '+00:00');
   const campagne_url = req.headers.referer || '';
 
   const payload = new URLSearchParams({
@@ -54,14 +52,13 @@ export default async function handler(req, res) {
       body: payload.toString(),
     });
 
-    const responseText = await response.text();
-    console.log('Databowl response:', responseText);
+    const result = await response.text();
 
     if (!response.ok) {
-      return res.status(500).json({ error: 'Failed to send lead', details: responseText });
+      return res.status(500).json({ error: 'Failed to send lead', details: result });
     }
 
-    return res.status(200).json({ success: true, response: responseText });
+    return res.status(200).json({ success: true, response: result });
   } catch (error) {
     console.error('Error sending lead:', error);
     return res.status(500).json({ error: 'Server error' });
