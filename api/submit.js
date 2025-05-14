@@ -1,7 +1,6 @@
-// api/submit.js
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
-    return res.status(405).json({ message: 'Method not allowed' });
+    return res.status(405).json({ success: false, message: 'Method not allowed' });
   }
 
   try {
@@ -10,14 +9,17 @@ export default async function handler(req, res) {
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded'
       },
-      body: req.body
+      body: new URLSearchParams(req.body).toString()
     });
 
-    const text = await response.text(); // Databowl geeft meestal text terug, geen JSON
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.status(response.status).send(text);
-  } catch (err) {
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.status(500).json({ error: 'Error forwarding lead', details: err.message });
+    const text = await response.text();
+
+    if (response.ok) {
+      return res.status(200).json({ success: true, response: text });
+    } else {
+      return res.status(response.status).json({ success: false, error: text });
+    }
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
   }
 }
