@@ -14,23 +14,24 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const {
-    gender,
-    firstname,
-    lastname,
-    email,
-    dob_day,
-    dob_month,
-    dob_year,
-    transaction_id
-  } = req.body;
+  const body = req.body;
+  console.log('Ontvangen body:', body);
+
+  const gender = body.gender || '';
+  const firstname = body.firstname || '';
+  const lastname = body.lastname || '';
+  const email = body.email || '';
+  const dob_day = (body.dob_day || '01').toString();
+  const dob_month = (body.dob_month || '01').toString();
+  const dob_year = (body.dob_year || '2000').toString();
+  const transaction_id = body.transaction_id || '';
 
   const dob = `${dob_year}-${dob_month.padStart(2, '0')}-${dob_day.padStart(2, '0')}`;
   const ip = req.headers['x-forwarded-for'] || req.connection?.remoteAddress || '';
   const optindate = new Date().toISOString();
   const campagne_url = req.headers.referer || '';
 
-  const body = new URLSearchParams({
+  const payload = new URLSearchParams({
     cid: '4885',
     f_2_title: gender,
     f_3_firstname: firstname,
@@ -39,7 +40,7 @@ export default async function handler(req, res) {
     f_5_dob: dob,
     f_17_ipaddress: ip,
     f_55_optindate: optindate,
-    f_1322_transaction_id: transaction_id || '',
+    f_1322_transaction_id: transaction_id,
     f_1453_campagne_url: campagne_url,
   });
 
@@ -49,11 +50,12 @@ export default async function handler(req, res) {
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
       },
-      body: body.toString(),
+      body: payload.toString(),
     });
 
     if (!response.ok) {
       const errorText = await response.text();
+      console.error('Databowl error:', errorText);
       return res.status(500).json({ error: 'Failed to send lead', details: errorText });
     }
 
