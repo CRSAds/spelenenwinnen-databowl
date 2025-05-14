@@ -1,6 +1,12 @@
 import Stripe from 'stripe';
 
-const stripe = new Stripe('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');
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+
+export const config = {
+  api: {
+    bodyParser: true,
+  },
+};
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
