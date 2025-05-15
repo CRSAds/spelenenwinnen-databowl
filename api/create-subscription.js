@@ -26,16 +26,10 @@ export default async function handler(req, res) {
   try {
     const { email, name } = req.body;
 
-    const customer = await mollie.customers.create({
-      name,
-      email,
-    });
+    const customer = await mollie.customers.create({ name, email });
 
     const payment = await mollie.payments.create({
-      amount: {
-        currency: 'EUR',
-        value: '0.99',
-      },
+      amount: { currency: 'EUR', value: '0.99' },
       description: 'Wekelijks abonnement Spelen & Winnen',
       redirectUrl: 'https://www.google.com',
       webhookUrl: 'https://spelenenwinnen-databowl.vercel.app/api/mollie-webhook',
