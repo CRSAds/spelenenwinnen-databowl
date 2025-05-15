@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "@mollie/api-client": "^4.3.2",
     "stripe": "^18.1.0"
   }
 }
