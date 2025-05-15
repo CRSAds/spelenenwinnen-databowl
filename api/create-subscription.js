@@ -1,4 +1,3 @@
-import { NextResponse } from 'next/server';
 import Mollie from '@mollie/api-client';
 
 const mollie = Mollie({ apiKey: process.env.MOLLIE_API_KEY });
@@ -10,12 +9,12 @@ export const config = {
 };
 
 export default async function handler(req, res) {
-  // CORS headers
+  // ✅ CORS headers
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
-  // Preflight check
+  // ✅ Handle preflight
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
   }
@@ -38,15 +37,15 @@ export default async function handler(req, res) {
         value: '0.99',
       },
       description: 'Wekelijks abonnement Spelen & Winnen',
-      redirectUrl: 'https://www.google.com', // 👈 vervang later
+      redirectUrl: 'https://www.google.com',
       webhookUrl: 'https://spelenenwinnen-databowl.vercel.app/api/mollie-webhook',
       customerId: customer.id,
       sequenceType: 'first',
     });
 
-    res.status(200).json({ url: payment.getCheckoutUrl() });
+    return res.status(200).json({ url: payment.getCheckoutUrl() });
   } catch (error) {
     console.error('Mollie error:', error);
-    res.status(500).json({ error: 'Failed to create payment' });
+    return res.status(500).json({ error: 'Failed to create payment' });
   }
 }
