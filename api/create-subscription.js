@@ -34,7 +34,7 @@ export default async function handler(req, res) {
       redirectUrl: 'https://www.google.com',
       webhookUrl: 'https://spelenenwinnen-databowl.vercel.app/api/mollie-webhook',
       customerId: customer.id,
-      sequenceType: 'first',
+      sequenceType: 'oneoff',
     });
 
     return res.status(200).json({ url: payment.getCheckoutUrl() });
