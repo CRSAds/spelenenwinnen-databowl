@@ -7,6 +7,16 @@ export const config = {
 };
 
 export default async function handler(req, res) {
+  // ✅ CORS headers
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+
+  if (req.method === 'OPTIONS') {
+    res.status(200).end();
+    return;
+  }
+
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
@@ -17,7 +27,7 @@ export default async function handler(req, res) {
     const response = await fetch('https://api.mollie.com/v2/payments', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${process.env.MOLLIE_API_KEY}`, // deze moet je in Vercel toevoegen
+        'Authorization': `Bearer ${process.env.MOLLIE_API_KEY}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
@@ -27,7 +37,7 @@ export default async function handler(req, res) {
         },
         description,
         redirectUrl: 'https://www.google.com',
-        method: 'ideal', // je kunt dit ook weglaten voor alle methodes
+        method: 'ideal', // of laat weg voor meerdere betaalopties
       }),
     });
 
